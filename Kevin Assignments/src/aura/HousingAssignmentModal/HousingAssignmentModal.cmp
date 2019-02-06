@@ -1,0 +1,133 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="HousingAssignmentModalApexController" access="global">
+    
+    <!-- Attributes -->
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="wrapper" type="Object"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="selectedBedId" type="String"/>
+    <aura:attribute name="arrivalDate" type="Date" default=""/>
+    
+    <!-- Registered Events -->
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- The Rest -->
+    <!-- Show Modal Button -->
+    <lightning:button variant="brand" 
+                      label="Assign Housing" 
+                      title="Assign Housing" 
+                      onclick="{!c.openModal}" />
+    
+	<!-- Modal Wrapper -->
+    <aura:if isTrue="{!v.isOpen}">
+        <div class="slds-modal_large">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Assign Housing</h2>
+                    </header>
+                    
+                    <!--Header with Contact Info-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Contact">
+                            <div class="slds-page-header">
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <lightning:outputField fieldName="Name" />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <lightning:outputField fieldName="Gender__c" />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <lightning:outputField fieldName="HasCar__c" />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <lightning:outputField fieldName="TrainingClass__c" />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <lightning:outputField fieldName="TrainingEndDate__c" />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <!-- This one is empty -->
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-4 slds-p-horizontal_medium">
+                                        <ui:inputDate aura:id="arrivalDate" label="Arrival Date" class="field" value="{!v.arrivalDate}" displayDatePicker="true" /> 
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning:recordViewForm>
+                        
+                        <!--Table of Housing Details-->
+                        <div>
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                <thead>
+                                    <tr class="slds-text-title--caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Assign">Assign</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Complex">Complex</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Unit">Unit</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Bed">Bed</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Cars">Cars</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Peers">Peers</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.wrapper.rows}" var="row">
+                                        <tr>
+                                            <td scope="row">
+                                                <div title="Assign?">
+                                                    <ui:inputCheckbox aura:id="cboxRow" text="{!row.bed.Id}" change="{!c.onSelect}"/>
+                                                </div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="slds-truncate" title="{!row.bed.HousingUnit__r.HousingComplex__r.Name}">
+                                                    {!row.bed.HousingUnit__r.HousingComplex__r.Name}
+                                                </div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="slds-truncate" title="{!row.bed.HousingUnit__r.Name}">{!row.bed.HousingUnit__r.Name}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="slds-truncate" title="{!row.bed.Name}">{!row.bed.Name}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="slds-truncate" title="{!row.numCars}">{!row.numCars}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div class="slds-truncate" title="{!row.numPeers}">{!row.numPeers}</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" 
+                                          label="Close"
+                                          title="Close"
+                                          onclick="{!c.closeModal}"/>
+                        <lightning:button variant="brand" 
+                                          label="Submit"
+                                          title="Submit"
+                                          onclick="{!c.onSubmit}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    
+</aura:component>
